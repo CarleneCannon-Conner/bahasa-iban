@@ -1,0 +1,75 @@
+type Query {
+  language(id: ID!): Language
+  words(filter: String, skip: Int, take: Int, orderBy: WordOrderByInput): Words
+  word(id: ID!): Word
+  pronunciation(phonetic: String!): Pronunciation
+}
+
+type Mutation {
+  createWord(spelling: String!, phonetic: String!, langId: ID!): Word!
+  addDescription(wordId: ID!, translation: String, abbrId: ID, originId: ID): Description!
+  deleteWord(id: ID!): Word!
+  createAbbr(abbr: String!, value: String!): Abbreviation
+  deleteAbbr(id: ID!): Abbreviation!
+  createOrigin(abbr: String!, value: String!): Origin
+  deleteOrigin(id: ID!): Origin!
+  createLanguage(description: String!): Language
+  deleteLanguage(id: ID!): Language!
+  createPronunciation(symbol: String!, description: String, iban: String, english: String): Pronunciation
+  deletePronunciation(id: ID!): Pronunciation!
+
+}
+
+type Words {
+  words: [Word!]!
+  count: Int!
+}
+
+type Word {
+  id: ID!
+  spelling: String!
+  phonetic: String!
+  descriptions: [Description]
+  language: Language!
+}
+
+type Description {
+  id: ID!
+  abbr: Abbreviation
+  origin: Origin
+  translation: String!
+}
+
+type Abbreviation {
+  id: ID!
+  abbr: String!
+  value: String!
+}
+
+type Origin {
+  id: ID!
+  abbr: String!
+  value: String!
+}
+
+type Language {
+  id: ID!
+  description: String!
+}
+
+type Pronunciation {
+  id: ID!
+  symbol: String!
+  description: String
+  iban: String
+  english: String
+}
+
+input WordOrderByInput {
+  spelling: Sort
+}
+
+enum Sort {
+  asc
+  desc
+}
