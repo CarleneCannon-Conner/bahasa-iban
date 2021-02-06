@@ -1,8 +1,9 @@
 type Query {
   language(id: ID!): Language
-  words(filter: String, skip: Int, take: Int, orderBy: WordOrderByInput): Words
+  words(filter: String, langId: Int, skip: Int, take: Int, orderBy: WordOrderByInput): Words
   word(id: ID!): Word
-  pronunciation(phonetic: String!): Pronunciation
+  pronunciations(filter: String, skip: Int, take: Int, orderBy: PronunciationOrderByInput): Pronunciations
+  pronunciation(id: ID!): Pronunciation
 }
 
 type Mutation {
@@ -22,6 +23,11 @@ type Mutation {
 
 type Words {
   words: [Word!]!
+  count: Int!
+}
+
+type Pronunciations {
+  pronunciations: [Pronunciation!]!
   count: Int!
 }
 
@@ -67,6 +73,14 @@ type Pronunciation {
 
 input WordOrderByInput {
   spelling: Sort
+  langId: Sort
+}
+
+input PronunciationOrderByInput {
+  symbol: Sort
+  description: Sort
+  iban: Sort
+  english: Sort
 }
 
 enum Sort {

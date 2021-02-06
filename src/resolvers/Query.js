@@ -1,17 +1,18 @@
-async function words(parent, args, context, info) {
-  const where = args.filter
+async function words(parent, {filter, langId, skip, take, orderBy}, context, info) {
+  const where = filter
     ? {
-      OR: [
-        { spelling: { contains: args.filter } },
+      AND: [
+        { spelling: { contains: filter } },
+        { langId: langId },
       ],
     }
     : {}
 
   const words = await context.prisma.word.findMany({
     where,
-    skip: args.skip,
-    take: args.take,
-    orderBy: args.orderBy,
+    skip,
+    take,
+    orderBy,
   })
 
   const count = await context.prisma.word.count({ where })
@@ -22,27 +23,30 @@ async function words(parent, args, context, info) {
   }
 }
 
-async function pronunciation(parent, args, context, info) {
-  const chars = args.filter.split('')
-  const pronunciations = []
+async function pronunciations(parent, {filter, skip, take, orderBy}, context, info) {
+  const where = filter
+  ? {
+    OR: [
+      { symbol: { contains: filter } },
+    ],
+  }
+  : {}
 
-  for (const char of chars) {
-    const where = char
-    ? {
-      OR: [
-        { symbol: { contains: char } },
-      ],
-    }
-    : {}
+ const pronunciations = await context.prisma.pronunciation.findMany({
+    where,
+    skip,
+    take,
+    orderBy,
+  })
+  const count = await context.prisma.pronunciation.count({ where })
 
-    const pronunciation = await context.prisma.pronunciation.findMany({
-      where
-    })
-    pronunciations.push(pronunciation)
+  return {
+    pronunciations,
+    count,
   }
 }
 
 module.exports = {
   words,
-  pronunciation,
+  pronunciations,
 }

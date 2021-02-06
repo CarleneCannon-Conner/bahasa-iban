@@ -15,7 +15,7 @@ model Word {
   createdAt    DateTime      @default(now())
   spelling     String        @unique // ai'
   phonetic     String // i?
-  descriptions Description[] @relation("word")
+  descriptions Description[]
   language     Language      @relation(fields: [langId], references: [id])
   langId       Int
 }
