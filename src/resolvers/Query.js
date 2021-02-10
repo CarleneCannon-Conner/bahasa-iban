@@ -1,4 +1,5 @@
 async function words(parent, {filter, langId, skip, take, orderBy}, context, info) {
+  console.log("*** word")
   const where = filter
     ? {
       AND: [
@@ -21,6 +22,10 @@ async function words(parent, {filter, langId, skip, take, orderBy}, context, inf
     words,
     count,
   }
+}
+
+async function word(parent, args, context, info) {
+  return await context.prisma.word.findUnique({ where: { id: Number(args.id) } })
 }
 
 async function pronunciations(parent, {filter, skip, take, orderBy}, context, info) {
@@ -46,7 +51,13 @@ async function pronunciations(parent, {filter, skip, take, orderBy}, context, in
   }
 }
 
+async function pronunciation(parent, args, context, info) {
+  return await context.prisma.pronunciation.findUnique({ where: { id: Number(args.id) } })
+}
+
 module.exports = {
   words,
+  word,
   pronunciations,
+  pronunciation,
 }

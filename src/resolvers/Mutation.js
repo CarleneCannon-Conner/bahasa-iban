@@ -1,42 +1,52 @@
-async function createWord(parent, args, context, info) {
-
+async function createWord(parent, {pronunciationIds, spelling, phonetic, langId}, context, info) {
   const newWord = await context.prisma.word.create({  
     data: {
-      spelling: args.spelling,
-      phonetic: args.phonetic,
-      language: { connect: { id: Number(args.langId) } },
-      descriptions: []
+      spelling,
+      phonetic,
+      language: { connect: { id: Number(langId) } },
+      descriptions: [],
     }
   })
 
   return newWord
 }
 
-async function addDescription(parent, args, context, info) {
-  const descriptionData = {
-    translation: args.translation,
-    word: { connect: { id: Number(args.wordId) } },
+async function addDescription(parent, {translation, wordId, originId, abbrId, }, context, info) {
+  const data = {
+    translation: translation,
+    word: { connect: { id: Number(wordId) } },
   }
 
-  if (args.originId) {
-    descriptionData.origin = { connect: { id: Number(args.originId) } }
+  if (originId) {
+    data.origin = { connect: { id: Number(originId) } }
   }
 
-  if (args.abbrId) {
-    descriptionData.abbr = { connect: { id: Number(args.abbrId) } }
+  if (abbrId) {
+    data.abbr = { connect: { id: Number(abbrId) } }
   }
 
-  return await context.prisma.description.create({  
-    data: descriptionData
+  const description =  await context.prisma.description.create({  
+    data
   })
-}
-async function deleteWord(parent, args, context, info) {
-  const word = await context.prisma.word.findUnique({ where: { id: Number(args.id) } })
 
-  const where = args.wordId
+  return description
+}
+
+async function createWordPronunciation (parent, args, context, info) {
+  return context.prisma.wordPronunciation.create({
+    data: {
+      word: { connect: { id: Number(args.wordId) } },
+      pronunciation: { connect: { id: Number(args.pronunciationId) } },
+    },
+  });
+}
+
+async function deleteWord(parent, {id}, context, info) {
+
+  const where = id
     ? {
       OR: [
-        { wordId: { contains: args.wordId } },
+        { wordId: { contains: id } },
       ],
     }
     : {}
@@ -60,71 +70,84 @@ async function deleteWord(parent, args, context, info) {
   })
 }
 
-async function createAbbr(parent, args, context, info) {
+async function createAbbr(parent, {abbr, value}, context, info) {
   return await context.prisma.abbreviation.create({  
     data: {
-      abbr: args.abbr,
-      value: args.value,
+      abbr,
+      value,
     }
   })
 }
 
-async function deleteAbbr(parent, args, context, info) {
+async function deleteAbbr(parent, {id}, context, info) {
   return await context.prisma.abbreviation.delete({
     where: {
-      id: Number(args.id)
+      id: Number(id)
     }
   })
 }
 
-async function createOrigin(parent, args, context, info) {
+async function createOrigin(parent, {abbr, value}, context, info) {
   return await context.prisma.origin.create({  
     data: {
-      abbr: args.abbr,
-      value: args.value,
+      abbr,
+      value,
     }
   })
 }
 
-async function deleteOrigin(parent, args, context, info) {
+async function deleteOrigin(parent, {id}, context, info) {
   return await context.prisma.origin.delete({
     where: {
-      id: Number(args.id)
+      id: Number(id)
     }
   })
 }
 
-async function createLanguage(parent, args, context, info) {
+async function createLanguage(parent, {description}, context, info) {
   return await context.prisma.language.create({  
     data: {
-      description: args.description,
+      description,
     }
   })
 }
 
-async function deleteLanguage(parent, args, context, info) {
+async function deleteLanguage(parent, {id}, context, info) {
   return await context.prisma.language.delete({
     where: {
-      id: Number(args.id)
+      id: Number(id)
     }
   })
 }
 
-async function createPronunciation(parent, args, context, info) {
-  return await context.prisma.pronunciation.create({  
-    data: {
-      symbol: args.symbol,
-      description: args.description || null,
-      iban: args.iban || null,
-      english: args.english || null,
-    }
+async function createPronunciation (parent, {symbol, description, iban, english}, context, info) {
+  let data = {
+    symbol,
+  }
+
+  if (description) {
+    data.descriptions
+  }
+
+  if (iban) {
+    data.iban
+  }
+
+  if (english) {
+    data.english
+  }
+
+  const pronunciation =  await context.prisma.pronunciation.create({  
+    data
   })
+
+  return pronunciation
 }
 
-async function deletePronunciation(parent, args, context, info) {
+async function deletePronunciation(parent, {id}, context, info) {
   return await context.prisma.pronunciation.delete({
     where: {
-      id: Number(args.id)
+      id: Number(id)
     }
   })
 }
@@ -132,6 +155,7 @@ async function deletePronunciation(parent, args, context, info) {
 module.exports = {
   createWord,
   addDescription,
+  createWordPronunciation,
   deleteWord,
   createAbbr,
   deleteAbbr,
@@ -140,7 +164,7 @@ module.exports = {
   createLanguage,
   deleteLanguage,
   createPronunciation,
-  deletePronunciation,
+  deletePronunciation
 }
 
 

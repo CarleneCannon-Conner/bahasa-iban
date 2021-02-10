@@ -7,7 +7,8 @@ type Query {
 }
 
 type Mutation {
-  createWord(spelling: String!, phonetic: String!, langId: ID!): Word!
+  createWord(spelling: String!, phonetic: String!, langId: ID! pronunciationIds: [ID]): Word!
+  createWordPronunciation(wordId: ID!, pronunciationId: ID!): WordPronunciation
   addDescription(wordId: ID!, translation: String, abbrId: ID, originId: ID): Description!
   deleteWord(id: ID!): Word!
   createAbbr(abbr: String!, value: String!): Abbreviation
@@ -18,7 +19,6 @@ type Mutation {
   deleteLanguage(id: ID!): Language!
   createPronunciation(symbol: String!, description: String, iban: String, english: String): Pronunciation
   deletePronunciation(id: ID!): Pronunciation!
-
 }
 
 type Words {
@@ -36,6 +36,7 @@ type Word {
   spelling: String!
   phonetic: String!
   descriptions: [Description]
+  pronunciations: [Pronunciation]
   language: Language!
 }
 
@@ -68,7 +69,13 @@ type Pronunciation {
   symbol: String!
   description: String
   iban: String
-  english: String
+  english: String,
+  words: [Word]
+}
+
+type WordPronunciation {
+  wordId: ID!
+  pronunciationId: ID!
 }
 
 input WordOrderByInput {

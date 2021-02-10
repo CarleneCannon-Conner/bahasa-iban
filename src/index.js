@@ -5,12 +5,14 @@ const path = require('path')
 const Query = require('./resolvers/Query')
 const Mutation = require('./resolvers/Mutation')
 const Description = require('./resolvers/Description')
+const Pronunciation = require('./resolvers/Pronunciation')
 const Word = require('./resolvers/Word')
 
 const resolvers = {
   Query,
   Mutation,
   Description,
+  Pronunciation,
   Word,
 }
 

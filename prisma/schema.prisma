@@ -11,54 +11,67 @@ generator client {
 }
 
 model Word {
-  id           Int           @id @default(autoincrement())
-  createdAt    DateTime      @default(now())
-  spelling     String        @unique // ai'
-  phonetic     String // i?
-  descriptions Description[]
-  language     Language      @relation(fields: [langId], references: [id])
-  langId       Int
+  createdAt       DateTime            @default(now())
+  id              Int                 @id @default(autoincrement())
+  spelling        String              @unique // ai'
+  language        Language            @relation(fields: [langId], references: [id])
+  langId          Int
+  phonetic        String // i?
+  descriptions    Description[]
+  pronunciations  WordPronunciation[]
+
 }
 
 model Description {
-  id           Int           @id @default(autoincrement())
-  word         Word         @relation(fields: [wordId], references: [id])
-  wordId       Int
-  abbr         Abbreviation? @relation(fields: [abbrId], references: [id])
-  abbrId       Int?
-  origin       Origin?       @relation(fields: [originId], references: [id])
-  originId     Int?
-  translation  String // water, juice, liquid, sap
+  id              Int                 @id @default(autoincrement())
+  word            Word                @relation(fields: [wordId], references: [id])
+  wordId          Int
+  abbr            Abbreviation?       @relation(fields: [abbrId], references: [id])
+  abbrId          Int?
+  origin          Origin?             @relation(fields: [originId], references: [id])
+  originId        Int?
+  translation     String // water, juice, liquid, sap
 }
 
 model Abbreviation {
-  id           Int           @id @default(autoincrement())
-  createdAt    DateTime      @default(now())
-  abbr         String        @unique // n.
-  value        String // noun       
+  id              Int                 @id @default(autoincrement())
+  createdAt       DateTime            @default(now())
+  abbr            String              @unique // n.
+  value           String // noun       
 }
 
 model Origin {
-  id           Int           @id @default(autoincrement())
-  createdAt    DateTime      @default(now())
-  abbr         String        @unique // M
-  value        String // Malay       
+  id              Int                 @id @default(autoincrement())
+  createdAt       DateTime            @default(now())
+  abbr            String              @unique // M
+  value           String // Malay       
 }
 
 model Language {
-  id           Int           @id @default(autoincrement())
-  createdAt    DateTime      @default(now())
-  description  String        @unique // English or Iban
+  id              Int                 @id @default(autoincrement())
+  createdAt       DateTime            @default(now())
+  description     String              @unique // English or Iban
 }
 
 // Search for symbol this against phonetic, displaying opposite language e.g. ai (i') should return
 // i: sounds like: it, give
 // ': ? the glottal stop, represented by an apostrophe sounds like: little, bottle, uh-huh
 model Pronunciation {
-  id           Int           @id @default(autoincrement())
-  createdAt    DateTime      @default(now())
-  symbol       String        @unique // â - maybe we can have a bold setting like *
-  description  String? // ? the glottal stop, represented by an apostrophe
-  iban         String? // aba'
-  english      String? // add, map
+  id              Int                 @id @default(autoincrement())
+  words           WordPronunciation[]
+  createdAt       DateTime            @default(now())
+  symbol          String              @unique // â - maybe we can have a bold setting like *
+  description     String? // ? the glottal stop, represented by an apostrophe
+  iban            String? // aba'
+  english         String? // add, map
+}
+ 
+model WordPronunciation {
+  word            Word                @relation(fields: [wordId], references: [id])
+  wordId          Int
+  pronunciation   Pronunciation       @relation(fields: [pronunciationId], references: [id])
+  pronunciationId Int
+  createdAt       DateTime            @default(now())
+
+  @@id([wordId, pronunciationId])
 }
