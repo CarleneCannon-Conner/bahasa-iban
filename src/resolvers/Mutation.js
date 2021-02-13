@@ -1,47 +1,36 @@
-async function createWord(parent, {pronunciationIds, spelling, phonetic, langId}, context, info) {
-  const newWord = await context.prisma.word.create({  
+createWord = async (parent, {spelling, phonetic, langId}, context, info) => {
+  return await context.prisma.word.create({  
     data: {
       spelling,
       phonetic,
       language: { connect: { id: Number(langId) } },
       descriptions: [],
+      pronunciations: [],
     }
   })
-
-  return newWord
 }
 
-async function addDescription(parent, {translation, wordId, originId, abbrId, }, context, info) {
-  const data = {
-    translation: translation,
-    word: { connect: { id: Number(wordId) } },
-  }
-
-  if (originId) {
-    data.origin = { connect: { id: Number(originId) } }
-  }
-
-  if (abbrId) {
-    data.abbr = { connect: { id: Number(abbrId) } }
-  }
-
-  const description =  await context.prisma.description.create({  
-    data
+addDescription = async (parent, {translation, wordId, originId, abbrId, }, context, info) => {
+  return await context.prisma.description.create({  
+    data: {
+      translation,
+      word: { connect: { id: Number(wordId) } },
+      origin: originId && { connect: { id: Number(originId) } },
+      abbr: abbrId && { connect: { id: Number(abbrId) } },
+    }
   })
-
-  return description
 }
 
-async function createWordPronunciation (parent, args, context, info) {
-  return context.prisma.wordPronunciation.create({
+createWordPronunciation = async (parent, args, context, info) => {
+  return await context.prisma.wordPronunciation.create({
     data: {
       word: { connect: { id: Number(args.wordId) } },
       pronunciation: { connect: { id: Number(args.pronunciationId) } },
     },
-  });
+  })
 }
 
-async function deleteWord(parent, {id}, context, info) {
+deleteWord = async (parent, {id}, context, info) => {
 
   const where = id
     ? {
@@ -70,7 +59,7 @@ async function deleteWord(parent, {id}, context, info) {
   })
 }
 
-async function createAbbr(parent, {abbr, value}, context, info) {
+createAbbr = async (parent, {abbr, value}, context, info) => {
   return await context.prisma.abbreviation.create({  
     data: {
       abbr,
@@ -79,7 +68,7 @@ async function createAbbr(parent, {abbr, value}, context, info) {
   })
 }
 
-async function deleteAbbr(parent, {id}, context, info) {
+deleteAbbr = async (parent, {id}, context, info) => {
   return await context.prisma.abbreviation.delete({
     where: {
       id: Number(id)
@@ -87,7 +76,7 @@ async function deleteAbbr(parent, {id}, context, info) {
   })
 }
 
-async function createOrigin(parent, {abbr, value}, context, info) {
+createOrigin = async (parent, {abbr, value}, context, info) => {
   return await context.prisma.origin.create({  
     data: {
       abbr,
@@ -96,7 +85,7 @@ async function createOrigin(parent, {abbr, value}, context, info) {
   })
 }
 
-async function deleteOrigin(parent, {id}, context, info) {
+deleteOrigin = async (parent, {id}, context, info) => {
   return await context.prisma.origin.delete({
     where: {
       id: Number(id)
@@ -104,7 +93,7 @@ async function deleteOrigin(parent, {id}, context, info) {
   })
 }
 
-async function createLanguage(parent, {description}, context, info) {
+createLanguage = async (parent, {description}, context, info) => {
   return await context.prisma.language.create({  
     data: {
       description,
@@ -112,7 +101,7 @@ async function createLanguage(parent, {description}, context, info) {
   })
 }
 
-async function deleteLanguage(parent, {id}, context, info) {
+deleteLanguage = async (parent, {id}, context, info) => {
   return await context.prisma.language.delete({
     where: {
       id: Number(id)
@@ -120,31 +109,18 @@ async function deleteLanguage(parent, {id}, context, info) {
   })
 }
 
-async function createPronunciation (parent, {symbol, description, iban, english}, context, info) {
-  let data = {
-    symbol,
-  }
-
-  if (description) {
-    data.descriptions
-  }
-
-  if (iban) {
-    data.iban
-  }
-
-  if (english) {
-    data.english
-  }
-
-  const pronunciation =  await context.prisma.pronunciation.create({  
-    data
+createPronunciation = async (parent, {symbol, description, iban, english}, context, info) => {
+  return await context.prisma.pronunciation.create({  
+    data: {
+      symbol,
+      description: description && description,
+      iban: iban && iban,
+      english: english && english
+    }
   })
-
-  return pronunciation
 }
 
-async function deletePronunciation(parent, {id}, context, info) {
+deletePronunciation = async (parent, {id}, context, info) => {
   return await context.prisma.pronunciation.delete({
     where: {
       id: Number(id)
@@ -166,5 +142,3 @@ module.exports = {
   createPronunciation,
   deletePronunciation
 }
-
-
