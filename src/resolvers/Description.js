@@ -1,12 +1,22 @@
-function abbr(parent, args, context) {
-  return context.prisma.description.findUnique({ where: { id: parent.id } }).abbr()
+word = async (parent, args, context) => {
+  return await context.prisma.description.findUnique({ where: { id: parent.id } }).word()
 }
 
-function origin(parent, args, context) {
-  return context.prisma.description.findUnique({ where: { id: parent.id } }).origin()
+abbr = async (parent, args, context) => {
+  return await context.prisma.description.findUnique({ where: { id: parent.id } }).abbr()
+}
+
+origin = async (parent, args, context) => {
+  return await context.prisma.description.findUnique({ where: { id: parent.id } }).origin()
+}
+
+updatedBy = async (parent, args, context) => {
+  return await context.prisma.description.findUnique({ where: { id: parent.id } }).updatedBy()
 }
 
 module.exports = {
+  word,
   abbr,
   origin,
+  updatedBy,
 }

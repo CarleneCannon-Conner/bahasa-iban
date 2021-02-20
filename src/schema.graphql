@@ -1,33 +1,173 @@
 type Query {
+  users(filter: String, skip: Int, take: Int, orderBy: UserOrderByInput): Users
+  user(id: ID): User
+  languages(filter: String, skip: Int, take: Int, orderBy: LanguageOrderByInput): Languages
   language(id: ID!): Language
+  descriptions(filter: String, skip: Int, take: Int, orderBy: DescriptionOrderByInput): Descriptions
+  description(id: ID!): Description
+  abbreviations(filter: String, skip: Int, take: Int, orderBy: AbbreviationOrderByInput): Abbreviations
+  abbreviation(id: ID!): Abbreviation
+  origins(filter: String, skip: Int, take: Int, orderBy: OriginOrderByInput): Origins
+  origin(id: ID!): Origin
   words(filter: String, langId: Int, skip: Int, take: Int, orderBy: WordOrderByInput): Words
   word(id: ID!): Word
   pronunciations(filter: String, skip: Int, take: Int, orderBy: PronunciationOrderByInput): Pronunciations
   pronunciation(id: ID!): Pronunciation
+  wordPronunciations(skip: Int, take: Int, orderBy: WordPronunciationOrderByInput): WordPronunciations
+  wordPronunciation(id: ID!): WordPronunciation
 }
 
 type Mutation {
-  createWord(spelling: String!, phonetic: String!, langId: ID! pronunciationIds: [ID]): Word!
-  createWordPronunciation(wordId: ID!, pronunciationId: ID!): WordPronunciation
-  addDescription(wordId: ID!, translation: String, abbrId: ID, originId: ID): Description!
+  createUser(email: String!, password: String!, name: String!): AuthPayload!
+  updateUser(id: ID!, email: String, password: String, name: String): AuthPayload!
+  login(email: String!, password: String!): AuthPayload!
+  createWord(spelling: String!, phonetic: String!, langId: ID!): Word!
+  updateWord(id: ID!, spelling: String!, phonetic: String!, langId: ID!): Word!
   deleteWord(id: ID!): Word!
-  createAbbr(abbr: String!, value: String!): Abbreviation
+  addDescription(wordId: ID!, translation: String, abbrId: ID, originId: ID): Description!
+  updateDescription(id: ID!, wordId: ID!, translation: String, abbrId: ID, originId: ID): Description!
+  removeDescription(id: ID!): Description!
+  createWordPronunciation(wordId: ID!, pronunciationId: ID!): WordPronunciation!
+  deleteWordPronunciation(id: ID!): WordPronunciation!
+  createAbbr(abbr: String!, value: String!): Abbreviation!
+  updateAbbr(id: ID!, abbr: String!, value: String!): Abbreviation!
   deleteAbbr(id: ID!): Abbreviation!
-  createOrigin(abbr: String!, value: String!): Origin
+  createOrigin(abbr: String!, value: String!): Origin!
+  updateOrigin(id: ID!, abbr: String!, value: String!): Origin!
   deleteOrigin(id: ID!): Origin!
-  createLanguage(description: String!): Language
+  createLanguage(description: String!): Language!
+  updateLanguage(id: ID!, description: String!): Language!
   deleteLanguage(id: ID!): Language!
-  createPronunciation(symbol: String!, description: String, iban: String, english: String): Pronunciation
+  createPronunciation(symbol: String!, description: String, iban: String, english: String): Pronunciation!
+  updatePronunciation(id: ID!, symbol: String!, description: String, iban: String, english: String): Pronunciation!
   deletePronunciation(id: ID!): Pronunciation!
 }
 
-type Words {
-  words: [Word!]!
+enum Sort {
+  asc
+  desc
+}
+
+type User {
+  id: ID!
+  name: String!
+  email: String!
+  words: [Word]
+  languages: [Language]
+  descriptions: [Description]
+  abbreviations: [Abbreviation]
+  origins: [Origin]
+  pronunciations: [Pronunciation]
+  wordPronunciations: [WordPronunciation]
+  createdAt: String!
+  lastUpdated: String!
+  updatedBy: User!
+}
+
+input UserOrderByInput {
+  id: Sort
+  name: Sort
+  email: Sort
+  updatedBy: Sort
+  createdAt: Sort
+}
+
+type Users {
+  users: [User!]!
   count: Int!
 }
 
-type Pronunciations {
-  pronunciations: [Pronunciation!]!
+type Language {
+  id: ID!
+  description: String!
+  createdAt: String!
+  lastUpdated: String!
+  updatedBy: User!
+}
+
+input LanguageOrderByInput {
+  id: Sort
+  description: Sort
+  createdAt: Sort
+  lastUpdated: Sort
+  updatedById: Sort
+}
+
+type Languages {
+  languages: [Language!]!
+  count: Int!
+}
+
+type Description {
+  id: ID!
+  abbr: Abbreviation
+  origin: Origin
+  translation: String!
+  word: Word!
+  createdAt: String!
+  lastUpdated: String!
+  updatedBy: User!
+}
+
+input DescriptionOrderByInput {
+  id: Sort
+  abbr: Sort
+  origin: Sort
+  word: Sort
+  translation: Sort
+  createdAt: Sort
+  lastUpdated: Sort
+  updatedById: Sort
+}
+
+type Descriptions {
+  descriptions: [Description!]!
+  count: Int!
+}
+
+type Abbreviation {
+  id: ID!
+  abbr: String!
+  value: String!
+  updatedBy: User!
+  createdAt: String!
+  lastUpdated: String!
+}
+
+input AbbreviationOrderByInput {
+  id: Sort
+  abbr: Sort
+  value: Sort
+  createdAt: Sort
+  lastUpdated: Sort
+  updatedById: Sort
+}
+
+type Abbreviations {
+  abbreviations: [Abbreviation!]!
+  count: Int!
+}
+
+type Origin {
+  id: ID!
+  abbr: String!
+  value: String!
+  createdAt: String!
+  lastUpdated: String!
+  updatedBy: User!
+}
+
+input OriginOrderByInput {
+  id: Sort
+  abbr: Sort
+  value: Sort
+  createdAt: Sort
+  lastUpdated: Sort
+  updatedById: Sort
+}
+
+type Origins {
+  origins: [Origin!]!
   count: Int!
 }
 
@@ -38,30 +178,23 @@ type Word {
   descriptions: [Description]
   pronunciations: [Pronunciation]
   language: Language!
+  createdAt: String!
+  lastUpdated: String!
+  updatedBy: User!
 }
 
-type Description {
-  id: ID!
-  abbr: Abbreviation
-  origin: Origin
-  translation: String!
+input WordOrderByInput {
+  id: Sort
+  spelling: Sort
+  language: Sort
+  createdAt: Sort
+  lastUpdated: Sort
+  updatedById: Sort
 }
 
-type Abbreviation {
-  id: ID!
-  abbr: String!
-  value: String!
-}
-
-type Origin {
-  id: ID!
-  abbr: String!
-  value: String!
-}
-
-type Language {
-  id: ID!
-  description: String!
+type Words {
+  words: [Word!]!
+  count: Int!
 }
 
 type Pronunciation {
@@ -71,26 +204,47 @@ type Pronunciation {
   iban: String
   english: String,
   words: [Word]
+  createdAt: String!
+  lastUpdated: String!
+  updatedBy: User!
+}
+
+input PronunciationOrderByInput {
+  id: Sort
+  symbol: Sort
+  description: Sort
+  iban: Sort
+  english: Sort
+  createdAt: Sort
+  lastUpdated: Sort
+}
+
+type Pronunciations {
+  pronunciations: [Pronunciation!]!
+  count: Int!
 }
 
 type WordPronunciation {
   wordId: ID!
   pronunciationId: ID!
+  createdAt: String!
+  lastUpdated: String!
+  updatedBy: User!
 }
 
-input WordOrderByInput {
-  spelling: Sort
-  langId: Sort
+input WordPronunciationOrderByInput {
+  wordId: Sort
+  pronunciationId: Sort
+  createdAt: Sort
+  lastUpdated: Sort
 }
 
-input PronunciationOrderByInput {
-  symbol: Sort
-  description: Sort
-  iban: Sort
-  english: Sort
+type WordPronunciations {
+  wordPronunciation: [WordPronunciation!]!
+  count: Int!
 }
 
-enum Sort {
-  asc
-  desc
+type AuthPayload {
+  token: String
+  user: User
 }

@@ -1,12 +1,16 @@
-function language(parent, args, context) {
-  return context.prisma.word.findUnique({ where: { id: parent.id } }).language()
+language = async (parent, args, context) => {
+  return await context.prisma.word.findUnique({ where: { id: parent.id } }).language()
 }
 
-function descriptions(parent, args, context) {
-  return context.prisma.word.findUnique({ where: { id: parent.id } }).descriptions()
+updatedBy = async (parent, args, context) => {
+  return await context.prisma.word.findUnique({ where: { id: parent.id } }).updatedBy()
 }
 
-async function pronunciations(parent, args, context, info) {
+descriptions = async (parent, args, context) => {
+  return await context.prisma.word.findUnique({ where: { id: parent.id } }).descriptions()
+}
+
+pronunciations = async (parent, args, context, info) => {
   const wordPronunciation = await context.prisma.wordPronunciation.findMany({
     where: {
       wordId: parent.id,
@@ -28,6 +32,7 @@ async function pronunciations(parent, args, context, info) {
 
 module.exports = {
   language,
+  updatedBy,
   descriptions,
   pronunciations,
 }

@@ -10,47 +10,78 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model Word {
-  createdAt       DateTime            @default(now())
+model User {
+  id                 Int                 @id @default(autoincrement())
+  createdAt          DateTime            @default(now())
+  lastUpdated        DateTime            @updatedAt
+  name               String              @unique
+  email              String              @unique
+  password           String
+  languages          Language[]
+  words              Word[]
+  descriptions       Description[]
+  abbreviations      Abbreviation[]
+  origins            Origin[]
+  pronunciations     Pronunciation[]
+  wordPronunciations WordPronunciation[]
+}
+
+model Language {
   id              Int                 @id @default(autoincrement())
+  createdAt       DateTime            @default(now())
+  lastUpdated     DateTime            @updatedAt
+  description     String              @unique // English or Iban
+  updatedBy       User?               @relation(fields: [updatedById], references: [id])
+  updatedById     Int?
+}
+
+model Word {
+  id              Int                 @id @default(autoincrement())
+  createdAt       DateTime            @default(now())
+  lastUpdated     DateTime            @updatedAt
   spelling        String              @unique // ai'
+  phonetic        String // i?
   language        Language            @relation(fields: [langId], references: [id])
   langId          Int
-  phonetic        String // i?
+  updatedBy       User?               @relation(fields: [updatedById], references: [id])
+  updatedById     Int?
   descriptions    Description[]
   pronunciations  WordPronunciation[]
-
 }
 
 model Description {
   id              Int                 @id @default(autoincrement())
+  createdAt       DateTime            @default(now())
+  lastUpdated     DateTime            @updatedAt
+  translation     String // water, juice, liquid, sap
   word            Word                @relation(fields: [wordId], references: [id])
   wordId          Int
   abbr            Abbreviation?       @relation(fields: [abbrId], references: [id])
   abbrId          Int?
   origin          Origin?             @relation(fields: [originId], references: [id])
   originId        Int?
-  translation     String // water, juice, liquid, sap
+  updatedBy       User?               @relation(fields: [updatedById], references: [id])
+  updatedById     Int?
 }
 
 model Abbreviation {
   id              Int                 @id @default(autoincrement())
   createdAt       DateTime            @default(now())
+  lastUpdated     DateTime            @updatedAt
   abbr            String              @unique // n.
-  value           String // noun       
+  value           String // noun
+  updatedBy       User?               @relation(fields: [updatedById], references: [id])
+  updatedById     Int?   
 }
 
 model Origin {
   id              Int                 @id @default(autoincrement())
   createdAt       DateTime            @default(now())
+  lastUpdated     DateTime            @updatedAt
   abbr            String              @unique // M
-  value           String // Malay       
-}
-
-model Language {
-  id              Int                 @id @default(autoincrement())
-  createdAt       DateTime            @default(now())
-  description     String              @unique // English or Iban
+  value           String // Malay
+  updatedBy       User?               @relation(fields: [updatedById], references: [id])
+  updatedById     Int?       
 }
 
 // Search for symbol this against phonetic, displaying opposite language e.g. ai (i') should return
@@ -58,20 +89,25 @@ model Language {
 // ': ? the glottal stop, represented by an apostrophe sounds like: little, bottle, uh-huh
 model Pronunciation {
   id              Int                 @id @default(autoincrement())
-  words           WordPronunciation[]
   createdAt       DateTime            @default(now())
+  lastUpdated     DateTime            @updatedAt
   symbol          String              @unique // â - maybe we can have a bold setting like *
   description     String? // ? the glottal stop, represented by an apostrophe
   iban            String? // aba'
   english         String? // add, map
+  updatedBy       User?               @relation(fields: [updatedById], references: [id])
+  updatedById     Int?
+  words           WordPronunciation[]
 }
  
 model WordPronunciation {
+  createdAt       DateTime            @default(now())
   word            Word                @relation(fields: [wordId], references: [id])
   wordId          Int
   pronunciation   Pronunciation       @relation(fields: [pronunciationId], references: [id])
   pronunciationId Int
-  createdAt       DateTime            @default(now())
+  updatedBy       User?               @relation(fields: [updatedById], references: [id])
+  updatedById     Int?
 
   @@id([wordId, pronunciationId])
 }
