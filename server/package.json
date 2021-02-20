@@ -1,0 +1,29 @@
+{
+  "name": "bahasa-iban-server",
+  "version": "1.0.0",
+  "author": "Carlene Cannon-Conner",
+  "keywords": [
+    "translation",
+    "dictionary",
+    "english",
+    "iban",
+    "prisma",
+    "apollo",
+    "graphql"
+  ],
+  "scripts": {
+    "start": "node src/index.js",
+    "studio": "npx prisma studio"
+  },
+  "dependencies": {
+    "@prisma/client": "^2.17.0",
+    "apollo-boost": "^0.4.9",
+    "apollo-server": "^2.19.2",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^8.5.1"
+  },
+  "devDependencies": {
+    "@prisma/cli": "^2.15.0",
+    "prisma": "^2.17.0"
+  }
+}

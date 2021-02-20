@@ -1,53 +1,40 @@
-const { PrismaClient } = require('@prisma/client')
-const { ApolloServer } = require('apollo-server')
-const fs = require('fs')
-const path = require('path')
-const { getUserId } = require('./utils')
-const Query = require('./resolvers/Query')
-const Mutation = require('./resolvers/Mutation')
-const Abbreviation = require('./resolvers/Abbreviation')
-const Description = require('./resolvers/Description')
-const Language = require('./resolvers/Language')
-const Origin = require('./resolvers/Origin')
-const Pronunciation = require('./resolvers/Pronunciation')
-const User = require('./resolvers/User')
-const Word = require('./resolvers/Word')
+import React from 'react'
+import ReactDOM from 'react-dom'
+import App from './components/App'
+import { ApolloProvider } from 'react-apollo'
+import { ApolloClient } from 'apollo-client'
+import { HttpLink } from 'apollo-link-http'
+import { InMemoryCache } from 'apollo-cache-inmemory'
+import { BrowserRouter } from 'react-router-dom'
+import { ApolloLink } from 'apollo-client-preset'
 
-const resolvers = {
-  Query,
-  Mutation,
-  Abbreviation,
-  Description,
-  Language,
-  Origin,
-  Pronunciation,
-  User,
-  Word,
-
-}
-
-const prisma = new PrismaClient()
-
-/* Serve bundled schema and resolvers */
-const server = new ApolloServer({
-  typeDefs: fs.readFileSync(
-    path.join(__dirname, 'schema.graphql'),
-    'utf8'
-  ),
-  resolvers,
-  context: ({ req }) => {
-    return {
-      ...req,
-      prisma,
-      userId:
-        req && req.headers.authorization
-          ? getUserId(req)
-          : null
+const httpLink = new HttpLink({ uri: 'http://localhost:4000/graphql' })
+/*
+const middlewareAuthLink = new ApolloLink((operation, forward) => {
+  const token = localStorage.getItem(process.env.AUTH_TOKEN)
+  const authorizationHeader = token ? `Bearer ${token}` : null
+  operation.setContext({
+    headers: {
+      authorization: authorizationHeader
     }
-  }
+  })
+  return forward(operation)
+})
+*/
+
+// const httpLinkWithAuthToken = middlewareAuthLink.concat(httpLink)
+
+const client = new ApolloClient({
+  // link: httpLinkWithAuthToken,
+  link: httpLink,
+  cache: new InMemoryCache()
 })
 
-server.listen()
-  .then(({ url }) =>
-  console.log(`Server is running on ${url}`)
-  )
+ReactDOM.render(
+  <BrowserRouter>
+      <ApolloProvider client={client}>
+          <App/>
+      </ApolloProvider>
+  </BrowserRouter>
+  , document.getElementById('root')
+)

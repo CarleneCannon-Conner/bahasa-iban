@@ -1,4 +1,17 @@
+# dependencies
+/node_modules
+
+# production
+/build
+
+# misc
 .env
-node_modules
-prisma/migrations
-prisma/.dev.db
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.vscode
+
+npm-debug.log*
+
