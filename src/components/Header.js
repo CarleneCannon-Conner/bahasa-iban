@@ -4,7 +4,7 @@ import { withRouter } from 'react-router'
 
 class Header extends Component {
   render() {
-    const authToken = localStorage.getItem(process.env.AUTH_TOKEN)
+    const authToken = localStorage.getItem('authToken')
     return (
       <div>
         <div>

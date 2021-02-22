@@ -4,7 +4,7 @@ import gql from 'graphql-tag'
 
 class Login extends Component {
   state = {
-    login: true, // switch between Login and SignUp
+    login: true,
     email: '',
     password: '',
     name: '',
@@ -19,25 +19,25 @@ class Login extends Component {
             <input
               value={this.state.name}
               onChange={e => this.setState({ name: e.target.value })}
-              type="text"
-              placeholder="Your name"
+              type='text'
+              placeholder='Your name'
             />
           )}
           <input
             value={this.state.email}
             onChange={e => this.setState({ email: e.target.value })}
-            type="text"
-            placeholder="Your email address"
+            type='text'
+            placeholder='Your email address'
           />
           <input
             value={this.state.password}
             onChange={e => this.setState({ password: e.target.value })}
-            type="password"
-            placeholder="Choose a safe password"
+            type='password'
+            placeholder='Choose a safe password'
           />
         </div>
         <div>
-          <div onClick={() => this._confirm()}>
+          <div onClick={() => this.confirm()}>
             {this.state.login ? 'login' : 'create account'}
           </div>
           <div
@@ -52,7 +52,7 @@ class Login extends Component {
     )
   }
 
-  _confirm = async () => {
+  confirm = async () => {
     const { name, email, password } = this.state
     if (this.state.login) {
       const result = await this.props.loginMutation({
@@ -63,7 +63,7 @@ class Login extends Component {
       })
       console.log('login token', result.data.login)
       const { token } = result.data.login
-      this._saveUserData(token)
+      this.saveUserData(token)
     } else {
       const result = await this.props.createUserMutation({
         variables: {
@@ -74,13 +74,13 @@ class Login extends Component {
       })
       console.log('createUser token', result.data.createUser)
       const { token } = result.data.createUser
-      this._saveUserData(token)
+      this.saveUserData(token)
     }
     this.props.history.push(`/`)
   }
 
-  _saveUserData = token => {
-    localStorage.setItem(process.env.AUTH_TOKEN, token)
+  saveUserData = token => {
+    localStorage.setItem('authToken', token)
   }
 }
 
