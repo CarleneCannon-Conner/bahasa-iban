@@ -3,7 +3,6 @@ const jwt = require('jsonwebtoken')
 const { getUserId } = require('../utils')
 
 createUser = async (parent, args, context, info) => {
-  console.log("*** createUser", args)
   const password = await bcrypt.hash(args.password, 10)
   const user = await context.prisma.user.create({ data: { ...args, password } })
 
@@ -35,7 +34,6 @@ updateUser = async (parent, {id, name, password}, context, info) => {
 }
 
 login = async (parent, args, context, info) => {
-  console.log("*** login", args)
   const user = await context.prisma.user.findUnique({ where: { email: args.email } })
   if (!user) {
     throw new Error('No such user found')

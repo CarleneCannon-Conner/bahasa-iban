@@ -61,7 +61,7 @@ class Login extends Component {
           password,
         },
       })
-      console.log('login token', result.data.login)
+      console.log('logged in user', result.data.login.user.name)
       const { token } = result.data.login
       this.saveUserData(token)
     } else {
@@ -72,7 +72,7 @@ class Login extends Component {
           password,
         },
       })
-      console.log('createUser token', result.data.createUser)
+      console.log('created user', result.data.createUser.user.name)
       const { token } = result.data.createUser
       this.saveUserData(token)
     }
@@ -87,7 +87,10 @@ class Login extends Component {
 const CREATE_USER_MUTATION = gql`
   mutation CreateUserMutation($email: String!, $password: String!, $name: String!) {
     createUser(email: $email, password: $password, name: $name) {
-      token
+      token,
+      user {
+        name
+      }
     }
   }
 `
@@ -95,7 +98,10 @@ const CREATE_USER_MUTATION = gql`
 const LOGIN_MUTATION = gql`
   mutation LoginMutation($email: String!, $password: String!) {
     login(email: $email, password: $password) {
-      token
+      token,
+      user {
+        name 
+      }
     }
   }
 `
