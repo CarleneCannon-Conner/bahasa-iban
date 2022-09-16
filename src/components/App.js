@@ -13,6 +13,7 @@ class App extends Component {
           <Route exact path='/' render={() => <Redirect to='/new/1' />} />
             <Route exact path="/login" component={Login} />
           </Switch>
+          <h1>Working Ptrogress</h1>
         </div>
       </div>
     )
